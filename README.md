@@ -1,5 +1,7 @@
 # Zap
 
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)
+
 Zap is an AI-powered online accounting platform that lets you manage your business using voice commands and natural language. Easily track finances, generate reports, and handle operations — all through an intuitive, conversational interface.
 
 ## Features
