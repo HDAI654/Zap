@@ -19,6 +19,7 @@ Zap/
 ├── core/                          # App-wide config and startup
 │   ├── config.py                 # Environment vars (DB, secrets, session)
 │   ├── constants.py              # Global constants
+│   ├── logger.py                 # Global logger
 │   └── startup.py                # App init: DB, middleware, etc
 
 ├── db/                            # DB connection, models, and CRUD
@@ -61,6 +62,7 @@ Zap/
 ├── main.py                        # Entry point for FastAPI app
 ├── requirements.txt               # Project dependencies
 ├── LICENSE                        # Project license
+├── login_register.html            # simple form for login or register
 ├── STRUCTURE.md                   # Project structure
 └── README.md                      # Project documentation
 
