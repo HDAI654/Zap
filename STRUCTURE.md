@@ -54,15 +54,14 @@ Zap/
 │   └── helpers.py                # Common helper functions (dates, etc)
 
 ├── middleware/                    # Custom FastAPI middlewares
-│   └── session_cookie.py          # Read session cookie on every request
+│   └── session_cookie.py         # Read session cookie on every request
 
 ├── tests/                         # Unit and integration tests
-│   ├── unit/
-│   └── integration/
 
 ├── main.py                        # Entry point for FastAPI app
 ├── requirements.txt               # Project dependencies
 ├── LICENSE                        # Project license
+├── STRUCTURE.md                   # Project structure
 └── README.md                      # Project documentation
 
 ```
