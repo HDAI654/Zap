@@ -10,6 +10,10 @@ Zap is an AI-powered online accounting platform that lets you manage your busine
 - 💬 Natural language interface
 - ☁️ Cloud-based and accessible anywhere
 
+## Project Structure
+
+See full [project structure here](STRUCTURE.md)
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
