@@ -22,9 +22,9 @@ async def root():
 
 app.include_router(v1.routers["auth"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/auth", tags=["auth"])
 app.include_router(v1.routers["user"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/user", tags=["user"])
-#app.include_router(v1.routers["voice"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/voice", tags=["voice"])
-#app.include_router(v1.routers["query"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/query", tags=["query"])
-#app.include_router(v1.routers["tables"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/tables", tags=["tables"])
+app.include_router(v1.routers["voice"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/voice", tags=["voice"])
+#app.include_router(v1.routers["query"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/query", tags=["query"])
+#app.include_router(v1.routers["tables"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/tables", tags=["tables"])
 
 
 

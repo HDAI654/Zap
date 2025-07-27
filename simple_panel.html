@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
   <head>
     <meta charset="UTF-8" />
-    <title>Login / Register / Add Table</title>
+    <title>Login / Register / Add Table / Voice Recorder</title>
   </head>
   <body>
     <h2>Register</h2>
@@ -65,6 +65,13 @@
     </form>
     <pre id="tableDataDisplay"></pre>
 
+    <hr />
+
+    <h2>Voice Recorder & Transcriber</h2>
+    <button id="startBtn">🎙️ ضبط صدا</button>
+    <button id="stopBtn">🛑 توقف و ارسال</button>
+    <p>📝 متن: <span id="transcribedText"></span></p>
+
     <script>
       // Register handler
       document
@@ -74,19 +81,22 @@
           const formData = new FormData(e.target);
           const body = Object.fromEntries(formData.entries());
 
-          const res = await fetch(
-            "http://localhost:8000/api/v1/auth/register",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body),
-              credentials: "include",
-            }
-          );
-
-          const data = await res.json();
-          console.log("Register response:", data);
-          alert("Register response: " + JSON.stringify(data));
+          try {
+            const res = await fetch(
+              "http://localhost:8000/api/v1/auth/register",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+                credentials: "include",
+              }
+            );
+            const data = await res.json();
+            console.log("Register response:", data);
+            alert("Register response: " + JSON.stringify(data));
+          } catch (error) {
+            alert("Error during registration: " + error.message);
+          }
         });
 
       // Login handler
@@ -97,16 +107,19 @@
           const formData = new FormData(e.target);
           const body = Object.fromEntries(formData.entries());
 
-          const res = await fetch("http://localhost:8000/api/v1/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-            credentials: "include",
-          });
-
-          const data = await res.json();
-          console.log("Login response:", data);
-          alert("Login response: " + JSON.stringify(data));
+          try {
+            const res = await fetch("http://localhost:8000/api/v1/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+              credentials: "include",
+            });
+            const data = await res.json();
+            console.log("Login response:", data);
+            alert("Login response: " + JSON.stringify(data));
+          } catch (error) {
+            alert("Error during login: " + error.message);
+          }
         });
 
       // Add Table handler
@@ -132,24 +145,28 @@
             data: tableData,
           };
 
-          const res = await fetch(
-            "http://localhost:8000/api/v1/user/add-table/",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body),
-              credentials: "include",
-            }
-          );
+          try {
+            const res = await fetch(
+              "http://localhost:8000/api/v1/user/add-table/",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+                credentials: "include",
+              }
+            );
 
-          if (res.ok) {
-            const data = await res.json();
-            console.log("Add table response:", data);
-            alert("Table added successfully! ID: " + data.id);
-          } else {
-            const err = await res.json();
-            console.error("Add table error:", err);
-            alert("Error adding table: " + JSON.stringify(err));
+            if (res.ok) {
+              const data = await res.json();
+              console.log("Add table response:", data);
+              alert("Table added successfully! ID: " + data.id);
+            } else {
+              const err = await res.json();
+              console.error("Add table error:", err);
+              alert("Error adding table: " + JSON.stringify(err));
+            }
+          } catch (error) {
+            alert("Error adding table: " + error.message);
           }
         });
 
@@ -157,25 +174,29 @@
       document
         .getElementById("loadTables")
         .addEventListener("click", async () => {
-          const res = await fetch(
-            "http://localhost:8000/api/v1/user/tables-names",
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
+          try {
+            const res = await fetch(
+              "http://localhost:8000/api/v1/user/tables-names",
+              {
+                method: "GET",
+                credentials: "include",
+              }
+            );
 
-          if (res.ok) {
-            const data = await res.json();
-            const list = document.getElementById("tablesList");
-            list.innerHTML = "";
-            data.tables.forEach((t) => {
-              const li = document.createElement("li");
-              li.textContent = `ID: ${t.id}, Name: ${t.name}`;
-              list.appendChild(li);
-            });
-          } else {
-            alert("Failed to load table names.");
+            if (res.ok) {
+              const data = await res.json();
+              const list = document.getElementById("tablesList");
+              list.innerHTML = "";
+              data.tables.forEach((t) => {
+                const li = document.createElement("li");
+                li.textContent = `ID: ${t.id}, Name: ${t.name}`;
+                list.appendChild(li);
+              });
+            } else {
+              alert("Failed to load table names.");
+            }
+          } catch (error) {
+            alert("Error loading tables: " + error.message);
           }
         });
 
@@ -188,23 +209,78 @@
           const formData = new FormData(e.target);
           const tableId = formData.get("tableId");
 
-          const res = await fetch(
-            `http://localhost:8000/api/v1/user/tables/${tableId}`,
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-
           const display = document.getElementById("tableDataDisplay");
 
-          if (res.ok) {
-            const data = await res.json();
-            display.textContent = JSON.stringify(data.table, null, 2);
-          } else {
-            display.textContent = "Table not found or error occurred.";
+          try {
+            const res = await fetch(
+              `http://localhost:8000/api/v1/user/tables/${tableId}`,
+              {
+                method: "GET",
+                credentials: "include",
+              }
+            );
+
+            if (res.ok) {
+              const data = await res.json();
+              display.textContent = JSON.stringify(data.table, null, 2);
+            } else {
+              display.textContent = "Table not found or error occurred.";
+            }
+          } catch (error) {
+            display.textContent = "Error fetching table: " + error.message;
           }
         });
+
+      // Voice recorder and transcriber
+      let mediaRecorder = null;
+      let chunks = [];
+
+      document
+        .getElementById("startBtn")
+        .addEventListener("click", async () => {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
+            });
+            mediaRecorder = new MediaRecorder(stream);
+            chunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+              chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+              const blob = new Blob(chunks, { type: "audio/wav" });
+              const formData = new FormData();
+              formData.append("audio", blob, "voice.wav");
+
+              try {
+                const response = await fetch(
+                  "http://localhost:5000/transcribe",
+                  {
+                    method: "POST",
+                    body: formData,
+                  }
+                );
+                const data = await response.json();
+                document.getElementById("transcribedText").textContent =
+                  data.text || "";
+              } catch (error) {
+                alert("خطا در ارسال صدا به سرور: " + error.message);
+              }
+            };
+
+            mediaRecorder.start();
+          } catch (err) {
+            alert("دسترسی به میکروفون امکان‌پذیر نیست: " + err.message);
+          }
+        });
+
+      document.getElementById("stopBtn").addEventListener("click", () => {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+      });
     </script>
   </body>
 </html>
