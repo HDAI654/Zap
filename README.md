@@ -26,13 +26,17 @@ git clone https://github.com/HDAI654/Zap.git
 pip install -r requirements.txt
 ```
 
-3. create tables
+3. prepare `.env`
+
+> use `.env.example` to create .env (It is required to start project !!)
+
+4. create tables
 
 ```
 python create_tables.py
 ```
 
-4. Run
+5. Run
 
 ```
 uvicorn main:app --reload

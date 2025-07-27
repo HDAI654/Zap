@@ -63,6 +63,8 @@ Zap/
 ├── requirements.txt               # Project dependencies
 ├── LICENSE                        # Project license
 ├── login_register.html            # simple form for login or register
+├── .env                           # enviroment variables
+├── .env.example                   # example for enviroment variables
 ├── STRUCTURE.md                   # Project structure
 └── README.md                      # Project documentation
 
