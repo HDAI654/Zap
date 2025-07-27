@@ -19,7 +19,6 @@ class LoginSchema(BaseModel):
     password: str
 
 # simple register
-
 @router.post("/register")
 def register(data: UserCreate, db: Session = Depends(get_db)):
     hashed = security.hash_password(data.password)

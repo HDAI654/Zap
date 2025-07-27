@@ -12,5 +12,8 @@ class UserModel(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    is_premium = Column(Boolean, default=False)
+
 
     sessions = relationship("SessionModel", back_populates="user")
+    tables = relationship("TableData", back_populates="user", cascade="all, delete")
