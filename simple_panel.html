@@ -1,76 +1,142 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <title>Login / Register / Add Table / Voice Recorder</title>
+    <!-- Bootstrap RTL CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <h2>Register</h2>
-    <form id="registerForm">
-      <input type="text" name="email" placeholder="Email" required /><br />
-      <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        required
-      /><br />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-      /><br />
-      <button type="submit">Register</button>
-    </form>
+  <body class="bg-light" dir="ltr">
+    <div class="container py-5">
+      <h2 class="mb-4">Register</h2>
+      <form id="registerForm" class="mb-5">
+        <div class="mb-3">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+            class="form-control"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
 
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="text" name="email" placeholder="Email" required /><br />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-      /><br />
-      <button type="submit">Login</button>
-    </form>
+      <h2 class="mb-4">Login</h2>
+      <form id="loginForm" class="mb-5">
+        <div class="mb-3">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+            class="form-control"
+          />
+        </div>
+        <button type="submit" class="btn btn-success w-100">Login</button>
+      </form>
 
-    <h2>Add Table</h2>
-    <form id="addTableForm">
-      <input type="text" name="name" placeholder="Table Name" required /><br />
-      <textarea
-        name="data"
-        placeholder='Table Data as JSON, e.g. {"key":"value"}'
-        required
-        rows="5"
-        cols="30"
-      ></textarea
-      ><br />
-      <button type="submit">Add Table</button>
-    </form>
+      <h2 class="mb-4">Add Table</h2>
+      <form id="addTableForm" class="mb-5">
+        <div class="mb-3">
+          <input
+            type="text"
+            name="name"
+            placeholder="Table Name"
+            required
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <textarea
+            name="data"
+            placeholder='Table Data as JSON, e.g. {"key":"value"}'
+            required
+            rows="5"
+            class="form-control"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning w-100 text-white">
+          Add Table
+        </button>
+      </form>
 
-    <h2>User Tables</h2>
-    <button id="loadTables">Load My Table Names</button>
-    <ul id="tablesList"></ul>
+      <h2 class="mb-4">User Tables</h2>
+      <button id="loadTables" class="btn btn-info mb-3 w-100">
+        Load My Table Names
+      </button>
+      <ul id="tablesList" class="list-group mb-5"></ul>
 
-    <h2>Get Table Data by ID</h2>
-    <form id="getTableForm">
-      <input
-        type="number"
-        name="tableId"
-        placeholder="Table ID"
-        required
-      /><br />
-      <button type="submit">Get Table Data</button>
-    </form>
-    <pre id="tableDataDisplay"></pre>
+      <h2 class="mb-4">Get Table Data by ID</h2>
+      <form id="getTableForm" class="mb-3">
+        <div class="mb-3">
+          <input
+            type="number"
+            name="tableId"
+            placeholder="Table ID"
+            required
+            class="form-control"
+          />
+        </div>
+        <button type="submit" class="btn btn-secondary w-100">
+          Get Table Data
+        </button>
+      </form>
+      <pre
+        id="tableDataDisplay"
+        class="p-3 bg-white border rounded"
+        style="min-height: 100px"
+      ></pre>
 
-    <hr />
+      <hr class="my-5" />
 
-    <h2>Voice Recorder & Transcriber</h2>
-    <button id="startBtn">🎙️ ضبط صدا</button>
-    <button id="stopBtn">🛑 توقف و ارسال</button>
-    <p>📝 متن: <span id="transcribedText"></span></p>
+      <h2 class="mb-4">Voice Recorder & Transcriber</h2>
+      <div class="d-flex gap-3 mb-3">
+        <button id="startBtn" class="btn btn-danger flex-fill">
+          🎙️ Start Recording
+        </button>
+        <button id="stopBtn" class="btn btn-outline-danger flex-fill">
+          🛑 Stop & Send
+        </button>
+      </div>
+      <p>📝 Text: <span id="transcribedText" class="fw-bold"></span></p>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
 
     <script>
       // Register handler
@@ -190,6 +256,7 @@
               data.tables.forEach((t) => {
                 const li = document.createElement("li");
                 li.textContent = `ID: ${t.id}, Name: ${t.name}`;
+                li.classList.add("list-group-item");
                 list.appendChild(li);
               });
             } else {
@@ -266,13 +333,13 @@
                 document.getElementById("transcribedText").textContent =
                   data.text || "";
               } catch (error) {
-                alert("خطا در ارسال صدا به سرور: " + error.message);
+                alert("Error sending audio to server: " + error.message);
               }
             };
 
             mediaRecorder.start();
           } catch (err) {
-            alert("دسترسی به میکروفون امکان‌پذیر نیست: " + err.message);
+            alert("Microphone access denied: " + err.message);
           }
         });
 
