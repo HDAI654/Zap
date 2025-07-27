@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     SESSION_EXPIRE_MINUTES: int = 30
     SESSION_COOKIE_NAME: str
     API_ACTIVE_VERSION: int
+    GPT_TOKEN: str
 
     class Config:
         env_file = ".env"

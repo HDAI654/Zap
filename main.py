@@ -10,10 +10,10 @@ app = FastAPI(title="Zap - AI Accounting Platform")
 add_cors_middleware(app)
 
 
-# simple login page
-@app.get("/login-page")
-def login_page():
-    return FileResponse("./login_register.html")
+# simple panel page
+@app.get("/simple-panel")
+def panel_page():
+    return FileResponse("./simple_panel.html")
 
 
 @app.get("/")
@@ -21,7 +21,7 @@ async def root():
     return {"message": "Welcome to Zap!"}
 
 app.include_router(v1.routers["auth"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/auth", tags=["auth"])
-app.include_router(v1.routers["user"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/users", tags=["users"])
+app.include_router(v1.routers["user"], prefix=f"/api/v{settings.API_ACTIVE_VERSION}/user", tags=["user"])
 #app.include_router(v1.routers["voice"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/voice", tags=["voice"])
 #app.include_router(v1.routers["query"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/query", tags=["query"])
 #app.include_router(v1.routers["tables"].router, prefix=f"/api/v{settings.API_ACTIVE_VERSION}/tables", tags=["tables"])

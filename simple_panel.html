@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login / Register / Add Table</title>
+  </head>
+  <body>
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" name="email" placeholder="Email" required /><br />
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        required
+      /><br />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+      /><br />
+      <button type="submit">Register</button>
+    </form>
+
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" name="email" placeholder="Email" required /><br />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+      /><br />
+      <button type="submit">Login</button>
+    </form>
+
+    <h2>Add Table</h2>
+    <form id="addTableForm">
+      <input type="text" name="name" placeholder="Table Name" required /><br />
+      <textarea
+        name="data"
+        placeholder='Table Data as JSON, e.g. {"key":"value"}'
+        required
+        rows="5"
+        cols="30"
+      ></textarea
+      ><br />
+      <button type="submit">Add Table</button>
+    </form>
+
+    <h2>User Tables</h2>
+    <button id="loadTables">Load My Table Names</button>
+    <ul id="tablesList"></ul>
+
+    <h2>Get Table Data by ID</h2>
+    <form id="getTableForm">
+      <input
+        type="number"
+        name="tableId"
+        placeholder="Table ID"
+        required
+      /><br />
+      <button type="submit">Get Table Data</button>
+    </form>
+    <pre id="tableDataDisplay"></pre>
+
+    <script>
+      // Register handler
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const body = Object.fromEntries(formData.entries());
+
+          const res = await fetch(
+            "http://localhost:8000/api/v1/auth/register",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+              credentials: "include",
+            }
+          );
+
+          const data = await res.json();
+          console.log("Register response:", data);
+          alert("Register response: " + JSON.stringify(data));
+        });
+
+      // Login handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const body = Object.fromEntries(formData.entries());
+
+          const res = await fetch("http://localhost:8000/api/v1/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            credentials: "include",
+          });
+
+          const data = await res.json();
+          console.log("Login response:", data);
+          alert("Login response: " + JSON.stringify(data));
+        });
+
+      // Add Table handler
+      document
+        .getElementById("addTableForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const tableName = formData.get("name");
+          const tableDataRaw = formData.get("data");
+
+          let tableData;
+          try {
+            tableData = JSON.parse(tableDataRaw);
+          } catch (error) {
+            alert("Invalid JSON in table data!");
+            return;
+          }
+
+          const body = {
+            name: tableName,
+            data: tableData,
+          };
+
+          const res = await fetch(
+            "http://localhost:8000/api/v1/user/add-table/",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+              credentials: "include",
+            }
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log("Add table response:", data);
+            alert("Table added successfully! ID: " + data.id);
+          } else {
+            const err = await res.json();
+            console.error("Add table error:", err);
+            alert("Error adding table: " + JSON.stringify(err));
+          }
+        });
+
+      // Load user's table names
+      document
+        .getElementById("loadTables")
+        .addEventListener("click", async () => {
+          const res = await fetch(
+            "http://localhost:8000/api/v1/user/tables-names",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            const list = document.getElementById("tablesList");
+            list.innerHTML = "";
+            data.tables.forEach((t) => {
+              const li = document.createElement("li");
+              li.textContent = `ID: ${t.id}, Name: ${t.name}`;
+              list.appendChild(li);
+            });
+          } else {
+            alert("Failed to load table names.");
+          }
+        });
+
+      // Get table data by ID
+      document
+        .getElementById("getTableForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const tableId = formData.get("tableId");
+
+          const res = await fetch(
+            `http://localhost:8000/api/v1/user/tables/${tableId}`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+
+          const display = document.getElementById("tableDataDisplay");
+
+          if (res.ok) {
+            const data = await res.json();
+            display.textContent = JSON.stringify(data.table, null, 2);
+          } else {
+            display.textContent = "Table not found or error occurred.";
+          }
+        });
+    </script>
+  </body>
+</html>

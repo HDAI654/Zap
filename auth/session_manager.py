@@ -8,7 +8,6 @@ def create_session_token() -> str:
 
 def set_session_cookie(response: Response, token: str):
     expire = datetime.utcnow() + timedelta(minutes=settings.SESSION_EXPIRE_MINUTES)
-    print(expire)
     max_age = settings.SESSION_EXPIRE_MINUTES * 60 
 
     response.set_cookie(
