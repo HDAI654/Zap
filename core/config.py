@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SESSION_COOKIE_NAME: str
     API_ACTIVE_VERSION: int
     GPT_TOKEN: str
+    ASSEMBLYAI_API_KEY: str
 
     class Config:
         env_file = ".env"

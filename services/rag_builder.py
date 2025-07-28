@@ -18,6 +18,7 @@ def extract_tables_prompt(tables_names: list[str], question: str) -> str:
     - Return only a JSON array of table names that are relevant to the question.
     - If you do not understand the question or no tables are relevant, return an empty JSON array [].
     - Do not add any other text or explanation, only return the JSON array.
+    - The spape of data that you should return : [{{"id":"id of table", "name":"name of table"}}, ...]
     """
 
     return prompt
@@ -55,7 +56,7 @@ def get_answer_prompt(table_data: dict, user_question: str) -> str:
     "sql_queries": ["SELECT * FROM table WHERE ...;", "UPDATE table SET ...;"]
     }}
     """
-
+    print(prompt)
     return prompt
 
 

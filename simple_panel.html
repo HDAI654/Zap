@@ -2,8 +2,7 @@
 <html lang="en" dir="rtl" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>Login / Register / Add Table / Voice Recorder</title>
-    <!-- Bootstrap RTL CSS -->
+    <title>Voice Recorder & Tables</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
       rel="stylesheet"
@@ -11,133 +10,276 @@
   </head>
   <body dir="ltr">
     <div class="container py-5">
-      <h2 class="mb-4">Register</h2>
-      <form id="registerForm" class="mb-5">
-        <div class="mb-3">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            required
-            class="form-control"
-          />
+      <div id="accordion">
+        <!-- Register -->
+        <div class="card">
+          <div class="card-header" id="headingRegister">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseRegister"
+                aria-expanded="true"
+                aria-controls="collapseRegister"
+              >
+                Register
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseRegister"
+            class="collapse"
+            aria-labelledby="headingRegister"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <form id="registerForm" class="mb-3">
+                <div class="mb-3">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <div class="mb-3">
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <div class="mb-3">
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  Register
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            required
-            class="form-control"
-          />
-        </div>
-        <div class="mb-3">
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-            class="form-control"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
-      </form>
 
-      <h2 class="mb-4">Login</h2>
-      <form id="loginForm" class="mb-5">
-        <div class="mb-3">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            required
-            class="form-control"
-          />
+        <!-- Login -->
+        <div class="card">
+          <div class="card-header" id="headingLogin">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseLogin"
+                aria-expanded="false"
+                aria-controls="collapseLogin"
+              >
+                Login
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseLogin"
+            class="collapse"
+            aria-labelledby="headingLogin"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <form id="loginForm" class="mb-3">
+                <div class="mb-3">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <div class="mb-3">
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <button type="submit" class="btn btn-success w-100">
+                  Login
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-            class="form-control"
-          />
+
+        <!-- Add Table -->
+        <div class="card">
+          <div class="card-header" id="headingAddTable">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseAddTable"
+                aria-expanded="false"
+                aria-controls="collapseAddTable"
+              >
+                Add Table
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseAddTable"
+            class="collapse"
+            aria-labelledby="headingAddTable"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <form id="addTableForm" class="mb-3">
+                <div class="mb-3">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Table Name"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <div class="mb-3">
+                  <textarea
+                    name="data"
+                    placeholder='Table Data as JSON, e.g. {"key":"value"}'
+                    required
+                    rows="5"
+                    class="form-control"
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning w-100 text-white">
+                  Add Table
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-success w-100">Login</button>
-      </form>
 
-      <h2 class="mb-4">Add Table</h2>
-      <form id="addTableForm" class="mb-5">
-        <div class="mb-3">
-          <input
-            type="text"
-            name="name"
-            placeholder="Table Name"
-            required
-            class="form-control"
-          />
+        <!-- Load Tables -->
+        <div class="card">
+          <div class="card-header" id="headingLoadTables">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseLoadTables"
+                aria-expanded="false"
+                aria-controls="collapseLoadTables"
+              >
+                User Tables
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseLoadTables"
+            class="collapse"
+            aria-labelledby="headingLoadTables"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <button id="loadTables" class="btn btn-info mb-3 w-100">
+                Load My Table Names
+              </button>
+              <ul id="tablesList" class="list-group mb-3"></ul>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <textarea
-            name="data"
-            placeholder='Table Data as JSON, e.g. {"key":"value"}'
-            required
-            rows="5"
-            class="form-control"
-          ></textarea>
+
+        <!-- Get Table Data by ID -->
+        <div class="card">
+          <div class="card-header" id="headingGetTable">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseGetTable"
+                aria-expanded="false"
+                aria-controls="collapseGetTable"
+              >
+                Get Table Data by ID
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseGetTable"
+            class="collapse"
+            aria-labelledby="headingGetTable"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <form id="getTableForm" class="mb-3">
+                <div class="mb-3">
+                  <input
+                    type="number"
+                    name="tableId"
+                    placeholder="Table ID"
+                    required
+                    class="form-control"
+                  />
+                </div>
+                <button type="submit" class="btn btn-secondary w-100">
+                  Get Table Data
+                </button>
+              </form>
+              <pre
+                id="tableDataDisplay"
+                class="p-3 border rounded"
+                style="min-height: 100px"
+              ></pre>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-warning w-100 text-white">
-          Add Table
-        </button>
-      </form>
 
-      <h2 class="mb-4">User Tables</h2>
-      <button id="loadTables" class="btn btn-info mb-3 w-100">
-        Load My Table Names
-      </button>
-      <ul id="tablesList" class="list-group mb-5"></ul>
-
-      <h2 class="mb-4">Get Table Data by ID</h2>
-      <form id="getTableForm" class="mb-3">
-        <div class="mb-3">
-          <input
-            type="number"
-            name="tableId"
-            placeholder="Table ID"
-            required
-            class="form-control"
-          />
+        <!-- Voice Recorder -->
+        <div class="card">
+          <div class="card-header" id="headingVoice">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseVoice"
+                aria-expanded="false"
+                aria-controls="collapseVoice"
+              >
+                Voice Recorder & Transcriber
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapseVoice"
+            class="collapse"
+            aria-labelledby="headingVoice"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <div class="d-flex gap-3 mb-3">
+                <button id="startBtn" class="btn btn-danger flex-fill">
+                  🎙️ Start Recording
+                </button>
+                <button id="stopBtn" class="btn btn-outline-danger flex-fill">
+                  🛑 Stop & Send
+                </button>
+              </div>
+              <p>📝 Text: <span id="transcribedText" class="fw-bold"></span></p>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn btn-secondary w-100">
-          Get Table Data
-        </button>
-      </form>
-      <pre
-        id="tableDataDisplay"
-        class="p-3 border rounded"
-        style="min-height: 100px"
-      ></pre>
-
-      <hr class="my-5" />
-
-      <h2 class="mb-4">Voice Recorder & Transcriber</h2>
-      <div class="d-flex gap-3 mb-3">
-        <button id="startBtn" class="btn btn-danger flex-fill">
-          🎙️ Start Recording
-        </button>
-        <button id="stopBtn" class="btn btn-outline-danger flex-fill">
-          🛑 Stop & Send
-        </button>
       </div>
-      <p>📝 Text: <span id="transcribedText" class="fw-bold"></span></p>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      defer
-    ></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       // Register handler
       document
@@ -323,7 +465,7 @@
 
               try {
                 const response = await fetch(
-                  "http://localhost:5000/transcribe",
+                  "http://localhost:8000/api/v1/voice/transcribe",
                   {
                     method: "POST",
                     body: formData,

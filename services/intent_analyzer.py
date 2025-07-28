@@ -1,6 +1,7 @@
 from openai import OpenAI
 from core.config import settings
 from services.rag_builder import extract_tables_prompt
+from core.logger import logger
 
 Bot = OpenAI(api_key=settings.GPT_TOKEN)
 
@@ -10,7 +11,7 @@ def extract_tables_from_question(tables_names: list[str], question: str) -> list
     to fulfill the user's request.
 
     Args:
-        tables_names (list[str]): List of user table names.
+        tables_names (list(str)): List of user table names.
         question (str): User's question or request.
 
     Returns:
@@ -36,14 +37,16 @@ def extract_tables_from_question(tables_names: list[str], question: str) -> list
         import json
         tables_list = json.loads(answer_text)
 
-        # Validate that it is a list of strings
-        if isinstance(tables_list, list) and all(isinstance(item, str) for item in tables_list):
+        # Validate that it's a list of dicts with 'id' and 'name'
+        if isinstance(tables_list, list) and all(
+            isinstance(item, dict) and 'id' in item and 'name' in item
+            for item in tables_list
+        ):
             return tables_list
         else:
-            # If format unexpected, return empty list
             return []
 
     except Exception as e:
         # In case of any error, return empty list and optionally log error
-        print(f"Error in extracting table names: {e}")
+        logger.error(f"Error in extracting table names: {e}")
         return []

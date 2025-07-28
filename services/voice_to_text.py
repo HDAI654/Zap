@@ -1,8 +1,7 @@
 import requests
 from core.config import settings
 
-#ASSEMBLYAI_API_KEY = settings.ASSEMBLYAI_API_KEY
-ASSEMBLYAI_API_KEY = ""
+ASSEMBLYAI_API_KEY = settings.ASSEMBLYAI_API_KEY
 UPLOAD_ENDPOINT = "https://api.assemblyai.com/v2/upload"
 TRANSCRIPT_ENDPOINT = "https://api.assemblyai.com/v2/transcript"
 
