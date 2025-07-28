@@ -273,6 +273,13 @@
                 </button>
               </div>
               <p>📝 Text: <span id="transcribedText" class="fw-bold"></span></p>
+              <br />
+              <input id="ttsInput" type="text" placeholder="Type something" />
+              <button
+                onclick="speakText(document.getElementById('ttsInput').value)"
+              >
+                🔊 Speak it
+              </button>
             </div>
           </div>
         </div>
@@ -474,6 +481,7 @@
                 const data = await response.json();
                 document.getElementById("transcribedText").textContent =
                   data.text || "";
+                speakText(data.text?.answer || "");
               } catch (error) {
                 alert("Error sending audio to server: " + error.message);
               }
@@ -490,6 +498,17 @@
           mediaRecorder.stop();
         }
       });
+
+      // text to speech
+      function speakText(text) {
+        if ("speechSynthesis" in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "en-US";
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Your browser does not support text-to-speech.");
+        }
+      }
     </script>
   </body>
 </html>

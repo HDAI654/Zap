@@ -56,7 +56,7 @@ def get_answer_prompt(table_data: dict, user_question: str) -> str:
     "sql_queries": ["SELECT * FROM table WHERE ...;", "UPDATE table SET ...;"]
     }}
     """
-    print(prompt)
+
     return prompt
 
 

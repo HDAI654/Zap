@@ -20,7 +20,6 @@ async def transcribe(audio: UploadFile = File(...), user=Depends(dependencies.ge
         # speech to text
         contents = await audio.read()
         user_text = transcribe_audio(contents)
-        print(user_text)
 
         # get names of user's tables
         tables = get_user_table_names(db=db, user_id=user.id)
