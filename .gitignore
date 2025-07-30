@@ -1,3 +1,39 @@
-venv/
-zap.db
-.env
+# === BACKEND ===
+backend/venv/
+backend/.env
+backend/zap.db
+backend/__pycache__/
+*.pyc
+
+# === FRONTEND ===
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/build/
+
+# === General ===
+.env*
+*.log
+*.pem
+*.tsbuildinfo
+.DS_Store
+
+# === Yarn & PnP ===
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# === Test & Coverage ===
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === Vercel ===
+.vercel/

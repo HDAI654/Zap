@@ -1,5 +1,0 @@
-2025-07-28 16:34:00 - dev_logger - ERROR - Error in transcribe endpoint: HTTPSConnectionPool(host='api.assemblyai.com', port=443): Max retries exceeded with url: /v2/upload (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x72d46430b860>: Failed to resolve 'api.assemblyai.com' ([Errno -3] Temporary failure in name resolution)"))
-2025-07-28 17:25:19 - dev_logger - ERROR - Error in transcribe endpoint: 'table_name'
-2025-07-28 17:26:50 - dev_logger - ERROR - Error in transcribe endpoint: 'table_name'
-2025-07-28 17:28:01 - dev_logger - ERROR - Error in transcribe endpoint: 'table_name'
-2025-07-28 17:31:30 - dev_logger - ERROR - Error in transcribe endpoint: 'table_name'
