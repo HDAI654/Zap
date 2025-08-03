@@ -3,12 +3,13 @@
 import { Tab } from "@headlessui/react";
 import axios from "axios";
 import baseURL, { version } from "@/BaseURL";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import { Button } from "@mui/material";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Parser } from "json2csv";
+import TableView from "@/components/tableView";
+import VoiceRec from "@/components/voiceRec";
 
 axios.defaults.baseURL = baseURL;
 axios.defaults.withCredentials = true;
@@ -18,6 +19,7 @@ export default function Panel() {
   const [tableData, setTableData] = useState<any[]>([]);
   const [error, setError] = useState(false);
   const [selectedTabIndex, setSelectedTabIndex] = useState<number | null>(null);
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -38,6 +40,7 @@ export default function Panel() {
     try {
       const res = await axios.get(`/api/v${version}/user/tables/${id}`);
       if (res.data.table) {
+        const name = res.data.table.name;
         const raw = res.data.table.data;
         const keys = Object.keys(raw);
         const rowCount = raw[keys[0]].length;
@@ -52,12 +55,9 @@ export default function Panel() {
 
         const columns: GridColDef[] = keys.map((key) => ({
           field: key,
-          headerName: key,
-          width: 150,
-          editable: true,
         }));
 
-        const newData = { id, rows, columns };
+        const newData = { id, name, rows, columns };
         console.log(newData);
         setTableData((prev) => {
           const copy = [...prev];
@@ -70,29 +70,9 @@ export default function Panel() {
     }
   };
 
-  const exportCSV = (rows: any[]) => {
-    const parser = new Parser();
-    const csv = parser.parse(rows);
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "table_export.csv";
-    link.click();
-  };
-
-  const exportPDF = (rows: any[], columns: any[]) => {
-    const doc = new jsPDF();
-    doc.text("Table Export", 10, 10);
-    autoTable(doc, {
-      head: [columns.map((col: any) => col.headerName)],
-      body: rows.map((row) => columns.map((col: any) => row[col.field])),
-    });
-    doc.save("table_export.pdf");
-  };
-
   return (
     <div className="container mt-4">
+      <VoiceRec />
       <Tab.Group
         selectedIndex={selectedTabIndex ?? -1}
         onChange={(index) => {
@@ -113,6 +93,7 @@ export default function Panel() {
             </Tab>
           ))}
         </Tab.List>
+
         {selectedTabIndex !== null && (
           <Tab.Panels className="tab-content p-3 border border-top-0">
             {Tables.map((_, index) => {
@@ -121,30 +102,8 @@ export default function Panel() {
                 <Tab.Panel key={index}>
                   {table ? (
                     <>
-                      <div className="mb-3 flex gap-2">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => exportCSV(table.rows)}
-                        >
-                          Export CSV
-                        </button>
-                        <button
-                          className="btn btn-primary mx-5"
-                          onClick={() => exportPDF(table.rows, table.columns)}
-                        >
-                          Export PDF
-                        </button>
-                      </div>
-                      <div style={{ height: 400, width: "100%" }}>
-                        <DataGrid
-                          rows={table.rows}
-                          columns={table.columns}
-                          pageSize={5}
-                          rowsPerPageOptions={[5, 10, 20]}
-                          checkboxSelection
-                          disableSelectionOnClick
-                          experimentalFeatures={{ newEditingApi: true }}
-                        />
+                      <div style={{ height: "500px", width: "100%" }}>
+                        <TableView tblData={table} />
                       </div>
                     </>
                   ) : (
