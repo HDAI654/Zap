@@ -12,7 +12,7 @@ from db.session import get_db
 router = APIRouter()
 
 @router.post("/transcribe")
-async def transcribe(audio: UploadFile = File(...), user=Depends(dependencies.get_current_user), db: Session = Depends(get_db)):
+async def transcribe(audio: UploadFile = File(...), user=Depends(dependencies.get_current_user), db: Session = Depends(get_db), table_name=None):
     """
     Receive audio file and return transcribed text.
     """
@@ -24,8 +24,14 @@ async def transcribe(audio: UploadFile = File(...), user=Depends(dependencies.ge
         # get names of user's tables
         tables = get_user_table_names(db=db, user_id=user.id)
 
-        # extract tables from user question
-        extracted_tables = extract_tables_from_question(tables_names=tables, question=user_text)
+
+        # get the focused table if exist
+        if table_name != None and table_name in tables:
+            extracted_tables = [table_name]
+
+        else:
+            # extract tables from user question
+            extracted_tables = extract_tables_from_question(tables_names=tables, question=user_text)
 
         # extract table data
         tables_data = [get_table_by_id(db=db, table_id=t["id"]) for t in extracted_tables]

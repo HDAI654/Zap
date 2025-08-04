@@ -31,9 +31,9 @@ class PromptCompiler:
                 raise ValueError(f"Invalid operation code: {op_code}")
             
             # Extract arguments
-            print(self.patterns[op_code])
-            match = re.match(self.patterns[op_code], prompt[2:])
-            print(match)
+            match = re.search(self.patterns[op_code], prompt)
+            if not match:
+                raise ValueError("Could not parse arguments for operation")
             
             # Execute operation
             result = self.operations[op_code](*match.groups())
@@ -139,4 +139,7 @@ if __name__ == "__main__":
     
     # Test operations
     print(compiler.compile("AR [3000, 3500]"))
-    #print(compiler.compile("DR 1"))      
+    print(compiler.compile("DR 1"))    
+    print(compiler.compile('EC (1, month2) "3000"'))  
+    print(compiler.compile('AC "bonus"')) 
+    print(compiler.compile('DC "bonus"'))
