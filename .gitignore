@@ -1,5 +1,5 @@
 # === BACKEND ===
-backend/venv/
+venv/
 backend/.env
 backend/zap.db
 backend/__pycache__/
