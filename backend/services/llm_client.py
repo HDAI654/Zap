@@ -1,34 +1,21 @@
 from openai import OpenAI
 from core.config import settings
 import json
-from services.rag_builder import get_answer_prompt
+from services.rag_builder import main_prompt
+from core.logger import logger
 
 Bot = OpenAI(api_key=settings.GPT_TOKEN)
 
-def get_answer_and_sql_queries(table_data: dict, user_question: str) -> dict:
-    """
-    Send the user's question along with the specific table data to the LLM,
-    requesting a formal and polite answer and a list of SQL queries.
-
-    Args:
-        table_data (dict): Parsed JSON data of the target table.
-        user_question (str): The user's natural language question.
-
-    Returns:
-        dict: {
-            "answer": str,        # Formal polite answer or fallback message.
-            "sql_queries": list   # List of SQL query strings to fulfill the request.
-        }
-    """
+def get_answer(table_names: list, user_text: str):
 
     # prepare prompt
-    prompt = get_answer_prompt(table_data=table_data, user_question=user_question)
+    prompt = main_prompt(table_names=table_names, user_text=user_text)
 
     try:
         response = Bot.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are a helpful and precise assistant."},
+                {"role": "system", "content": "You are a helpful and precise assistant and your name is Zap."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0,
@@ -42,23 +29,24 @@ def get_answer_and_sql_queries(table_data: dict, user_question: str) -> dict:
         # Validate keys and types
         if (
             isinstance(result, dict)
-            and "answer" in result
-            and "sql_queries" in result
-            and isinstance(result["answer"], str)
-            and isinstance(result["sql_queries"], list)
-            and all(isinstance(q, str) for q in result["sql_queries"])
+            and "success" in result
+            and "answer_sentence" in result
+            and "queries" in result
+            and isinstance(result["queries"], list)
         ):
             return result
         else:
             # Return fallback if invalid response structure
             return {
-                "answer": "Unfortunately, I did not understand your request. Please try again.",
-                "sql_queries": []
+                "success": False,
+                "answer_sentence": "Unfortunately, I did not understand your request. Please try again.",
+                "queries": []
             }
 
     except Exception as e:
-        print(f"Error in LLM response parsing: {e}")
+        logger.error(f"Error in LLM response parsing: {e}")
         return {
-            "answer": "Unfortunately, I did not understand your request. Please try again.",
-            "sql_queries": []
-        }
+                "success": False,
+                "answer_sentence": "Unfortunately, I did not understand your request. Please try again.",
+                "queries": []
+            }

@@ -142,15 +142,6 @@
             <div class="card-body">
               <form id="addTableForm" class="mb-3">
                 <div class="mb-3">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Table Name"
-                    required
-                    class="form-control"
-                  />
-                </div>
-                <div class="mb-3">
                   <textarea
                     name="data"
                     placeholder='Table Data as JSON, e.g. {"key":"value"}'
@@ -280,9 +271,68 @@
                 ></div>
               </div>
               <p id="transcribedText"></p>
+              <form class="form-control border-0 text-center">
+                <input id="user_text_input" name="text" class="form-control" placeholder="Write your message ..."></input>
+                <button id="submit_txt_form" class="btn btn-success w-100" type="submit">Send</button>
+              </form>
             </div>
           </div>
         </div>
+
+        <!-- Prompt Compiler -->
+        <div class="card">
+          <div class="card-header" id="headingPrompt">
+            <h5 class="mb-0">
+              <button
+                class="btn btn-link collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapsePrompt"
+                aria-expanded="false"
+                aria-controls="collapsePrompt"
+              >
+                Prompt Compiler
+              </button>
+            </h5>
+          </div>
+          <div
+            id="collapsePrompt"
+            class="collapse"
+            aria-labelledby="headingPrompt"
+            data-bs-parent="#accordion"
+          >
+            <div class="card-body">
+              <form id="promptForm" class="mb-3">
+                <div class="mb-3">
+                  <input
+                    type="number"
+                    id="promptTableId"
+                    class="form-control mb-2"
+                    placeholder="Table ID"
+                    required
+                  />
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="promptInput"
+                      class="form-control"
+                      placeholder="Enter a prompt"
+                    />
+                    <button type="button" id="addPromptBtn" class="btn btn-outline-primary">+</button>
+                  </div>
+                </div>
+
+                <ul id="promptList" class="list-group mb-3"></ul>
+
+                <button type="submit" id="submitPrompts" class="btn btn-primary w-100">
+                  Submit Prompts
+                </button>
+              </form>
+
+              <p id="promptResult" class="mt-3"></p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -344,7 +394,6 @@
           e.preventDefault();
 
           const formData = new FormData(e.target);
-          const tableName = formData.get("name");
           const tableDataRaw = formData.get("data");
 
           let tableData;
@@ -356,13 +405,12 @@
           }
 
           const body = {
-            name: tableName,
-            data: tableData,
+            table_json: tableData,
           };
 
           try {
             const res = await fetch(
-              "http://localhost:8000/api/v1/user/add-table/",
+              "http://localhost:8000/api/v1/tables/add-table/",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -391,7 +439,7 @@
         .addEventListener("click", async () => {
           try {
             const res = await fetch(
-              "http://localhost:8000/api/v1/user/tables-names",
+              "http://localhost:8000/api/v1/tables/tables-names",
               {
                 method: "GET",
                 credentials: "include",
@@ -404,7 +452,7 @@
               list.innerHTML = "";
               data.tables.forEach((t) => {
                 const li = document.createElement("li");
-                li.textContent = `ID: ${t.id}, Name: ${t.name}`;
+                li.textContent = `ID: ${t.ID}, Name: ${t.name}`;
                 li.classList.add("list-group-item");
                 list.appendChild(li);
               });
@@ -429,7 +477,7 @@
 
           try {
             const res = await fetch(
-              `http://localhost:8000/api/v1/user/tables/${tableId}`,
+              `http://localhost:8000/api/v1/tables/tables/${tableId}`,
               {
                 method: "GET",
                 credentials: "include",
@@ -495,7 +543,6 @@
       }
 
       function stopRecord() {
-        voice_btn.innerHTML = `<div class="h-100 w-100 bg-light" style="border-radius: 50%"></div>`;
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
         }
@@ -512,6 +559,47 @@
       voice_btn.addEventListener("touchstart", startRecord);
       voice_btn.addEventListener("touchend", stopRecord);
 
+
+      // text with AI model
+      document
+      .querySelector('form.form-control.text-center')
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const userInput = document.getElementById("user_text_input").value;
+        document.getElementById("submit_txt_form").innerHTML = `<div class="spinner-border text-dark" role="status"></div>`
+
+        if (!userInput.trim()) {
+          alert("Please enter some text first.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("text", userInput);
+
+        try {
+          const response = await fetch("http://localhost:8000/api/v1/voice/transcribe", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+          });
+
+          const data = await response.json();
+
+          if (data.text) {
+            document.getElementById("transcribedText").textContent = "Answer: " + data.text;
+            speakText(data.text);
+          } else {
+            alert("No response text received.");
+          }
+        } catch (error) {
+          alert("Error sending text to server: " + error.message);
+        } finally {
+          document.getElementById("user_text_input").value = ""
+          document.getElementById("submit_txt_form").innerHTML = `Send`
+        }
+      });
+
       // text to speech
       function speakText(text) {
         if ("speechSynthesis" in window) {
@@ -522,6 +610,79 @@
           alert("Your browser does not support text-to-speech.");
         }
       }
+    
+    
+      // Send Prompts
+      let promptArray = [];
+
+      document.getElementById("addPromptBtn").addEventListener("click", () => {
+        const promptInput = document.getElementById("promptInput");
+        const promptText = promptInput.value.trim();
+
+        if (promptText) {
+          promptArray.push(promptText);
+
+          const li = document.createElement("li");
+          li.textContent = promptText;
+          li.classList.add("list-group-item");
+          document.getElementById("promptList").appendChild(li);
+
+          promptInput.value = "";
+        }
+      });
+
+      document.getElementById("promptForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const tableId = document.getElementById("promptTableId").value;
+        const resultEl = document.getElementById("promptResult");
+        const submitBtn = document.getElementById("submitPrompts");
+
+        if (!promptArray.length) {
+          alert("Please add at least one prompt.");
+          return;
+        }
+
+        if (!tableId) {
+          alert("Please enter a table ID.");
+          return;
+        }
+
+        submitBtn.innerHTML = `<div class="spinner-border spinner-border-sm text-light" role="status"></div>`;
+
+        try {
+          const res = await fetch("http://localhost:8000/api/v1/tables/compile-prompt", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              table_id: Number(tableId),
+              prompts: promptArray,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            resultEl.textContent = "✅ Success: " + JSON.stringify(data);
+          } else {
+            resultEl.textContent = "❌ Error: " + (data.detail || "Unknown error");
+          }
+
+          // Clear after submit
+          promptArray = [];
+          document.getElementById("promptList").innerHTML = "";
+          document.getElementById("promptInput").value = "";
+        } catch (error) {
+          resultEl.textContent = "❌ Exception: " + error.message;
+        } finally {
+          submitBtn.innerHTML = "Submit Prompts";
+        }
+      });
+
+          
     </script>
   </body>
 </html>

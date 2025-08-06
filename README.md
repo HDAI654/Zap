@@ -44,21 +44,7 @@ uvicorn main:app --reload
 
 ---
 
-#### for login and register use
-
-[This file](login_register.html)
-
-#### register
-
-```
-curl -X POST "http://127.0.0.1:8000/api/v1/auth/register"   -H "Content-Type: application/json"   -d '{"email": "example@gmail.com", "password": "your_password", "username": "your_username"}'
-```
-
-#### login
-
-```
-curl -X POST http://127.0.0.1:8000/api/v1/auth/login   -H "Content-Type: application/json"   -d '{"email": "example@gmail.com", "password": "your_password"}'
-```
+#### for login and register use go to [http:/localhost:8000/simple-panel](http:/localhost:8000/simple-panel)
 
 ## Project Structure
 

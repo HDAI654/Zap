@@ -1,62 +1,68 @@
-import json
-
-def extract_tables_prompt(tables_names: list[str], question: str) -> str:
-    # Format the list as a string
-    tables_text = "\n".join(f"- {name}" for name in tables_names)
-
+def main_prompt(table_names:list, user_text) -> str:
+    table_list_str = "\n".join([
+        f"- ID: {t['ID']}, name: {t['name']}, columns structure: [{', '.join([f'{col['name']} ({col['type']})' for col in t['columns_structure']])}]"
+        for t in table_names
+    ])
     prompt = f"""
-    You are an assistant that helps decide which tables from the user's available tables
-    need to be checked to answer the user's question.
+        You are an intelligent assistant designed to help users with data querying and modification tasks on their accessible tables.
 
-    User's tables:
-    {tables_text}
+        User asked the following question:
+        \"\"\"{user_text}\"\"\"
 
-    User's question:
-    {question}
+        The tables available to this user are:
+        {table_list_str}
 
-    Instructions:
-    - Return only a JSON array of table names that are relevant to the question.
-    - If you do not understand the question or no tables are relevant, return an empty JSON array [].
-    - Do not add any other text or explanation, only return the JSON array.
-    - The spape of data that you should return : [{{"id":"id of table", "name":"name of table"}}, ...]
+        The following operations are supported along with their examples:
+
+        1. Add Row (AR):
+        AR [value1, value2, ...]
+        Example: AR [123, John Doe, 30]
+
+        2. Delete Row (DR):
+        DR row_index
+        Example: DR 2
+
+        3. Edit Cell (EC):
+        EC (row_index, column_name) "new_value"
+        Example: EC (0, name) "Jane Smith"
+
+        4. Add Column (AC):
+        AC "new_column_name"
+        Example: AC "email"
+
+        5. Delete Column (DC):
+        DC "column_name"
+        Example: DC "age"
+
+        Your output must be a pure JSON object matching the following schema exactly (no extra text):
+
+        {{
+        "success": true/false,
+        "answer_sentence": "A human-readable response to the user’s question or error explanation.",
+        "queries": [
+            {{
+            "table_name": "name of the table",
+            "table_id": "id of table"
+            "queries": ["list of operations/queries to perform on this table"]
+            }},
+            ...
+        ]
+        }}
+
+        Rules:
+        - Never respond with anything other than the JSON object.
+        - If the user's request is unclear or cannot be performed with the available data, return success=false with an appropriate message and an empty queries list.
+        - If you do not understand the user's intent, respond with success=false and an explanation.
+        - You may ask clarifying questions by responding with success=false and a message asking for more details.
+        - If the user's request does not require any operations (queries), provide a meaningful response in "answer_sentence", return an empty "queries" list, and set "success" to true.
+        - When interpreting the table name mentioned by the user, ignore letter casing differences. For example, if the actual table name is "Employee" and the user writes "employee", assume they refer to the same table. However, in the JSON output, the "table_name" field must exactly match the correct casing from the available tables list (e.g., "Employee").
+        - When generating queries, strictly follow the order and data types of the columns defined in each table. If the value type provided by the user is invalid (e.g., using a string where an integer is required), return an appropriate error message. However, if the user provides values in an incorrect order, automatically correct the order in the generated query according to the table's defined column structure.
+
+
+
+
+        ---
+
+        Respond now only with the JSON output based on the above instructions.
     """
-
     return prompt
-
-
-def get_answer_prompt(table_data: dict, user_question: str) -> str:
-    # Convert table_data dict to pretty JSON string to include in the prompt
-    table_json_str = json.dumps(table_data, indent=2, ensure_ascii=False)
-
-    prompt = f"""
-    You are an expert data assistant.
-
-    You have access to the following table data in JSON format:
-    {table_json_str}
-
-    User's question:
-    {user_question}
-
-    Instructions:
-    - Provide a formal, polite, and clear answer in English to the user's question under the key "answer".
-    - Also provide a list of SQL queries under the key "sql_queries" that are needed to fulfill the user's request.
-    - The SQL queries can be SELECT, INSERT, UPDATE, or DELETE statements depending on the user's needs.
-    - If the user request requires calculations like average, sum, count, or data analysis, answer the question yourself using the data provided (no need to generate SQL for calculations).
-    - Do not provide any extra explanations about calculations or queries; the user only needs a natural, straightforward answer.
-    - If you understand, say to the user at the beginning of your answer that you have understood.
-    - Do not give any extra explanations.
-    - If you do not understand the user's request, respond with the answer:
-    "Unfortunately, I did not understand your request. Please try again."
-    - Return your entire response only as a JSON object with exactly two keys: "answer" and "sql_queries".
-    - Do not add any explanation or text outside the JSON object.
-
-    Example output:
-    {{
-    "answer": "Your formal and polite answer here.",
-    "sql_queries": ["SELECT * FROM table WHERE ...;", "UPDATE table SET ...;"]
-    }}
-    """
-
-    return prompt
-
-

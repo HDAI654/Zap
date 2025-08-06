@@ -16,4 +16,3 @@ class UserModel(Base):
 
 
     sessions = relationship("SessionModel", back_populates="user")
-    tables = relationship("TableData", back_populates="user", cascade="all, delete")

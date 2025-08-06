@@ -1,57 +1,92 @@
-from sqlalchemy.orm import Session
-from db.models.table_data import TableData
 import json
+from typing import List, Optional
+from core.config import settings
 
-def get_user_table_names(db: Session, user_id: int):
-    # Get all tables of user
-    tables = db.query(TableData).filter(TableData.user_id == user_id).all()
+TABLES_FILE = settings.TABLES_FILE
 
-    # find IDs and Names
-    # ! name saved in filed named 'name' in json
+
+def load_tables_from_file() -> List[dict]:
+    try:
+        with open(TABLES_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        raise ValueError("Malformed JSON in tables file.")
+
+
+def save_tables_to_file(tables: List[dict]):
+    with open(TABLES_FILE, "w", encoding="utf-8") as f:
+        json.dump(tables, f, indent=2, ensure_ascii=False)
+
+
+def get_user_table_names(user_id: int) -> List[dict]:
+    tables = load_tables_from_file()
     result = []
     for table in tables:
-        table_data = table.table_json
-        table_name = table_data.get("name") if isinstance(table_data, dict) else None
-        result.append({"id": table.id, "name": table_name})
+        if table.get("user") == user_id:
+            result.append({"ID": table.get("ID"), "name": table.get("name"), "columns_structure": table.get("data").get("columns")})
     return result
 
 
-def get_table_by_id(db: Session, table_id: int):
-    table = db.query(TableData).filter(TableData.id == table_id).first()
-    if not table:
-        return None
-    
-    table_data = table.table_json
-    return table_data
+def get_table_by_id(user_id: int, table_id: int) -> Optional[dict]:
+    tables = load_tables_from_file()
+    for table in tables:
+        if table.get("user") == user_id and table.get("ID") == table_id:
+            return table
+    return None
+
 
 def is_valid_table_json(table_json: dict) -> bool:
-    """
-    ## review the json
-    """
     if not isinstance(table_json, dict):
         return False
-    if "name" not in table_json or "data" not in table_json:
+    if "name" not in table_json or not isinstance(table_json["name"], str):
         return False
-    if not isinstance(table_json["name"], str):
+    if "data" not in table_json or not isinstance(table_json["data"], dict):
         return False
-    if not isinstance(table_json["data"], dict):
+    if "columns" not in table_json["data"] or "rows" not in table_json["data"]:
         return False
     return True
 
-def add_table(db: Session, user_id: int, table_json: dict):
+
+def add_table(user_id: int, table_json: dict) -> dict:
     if not is_valid_table_json(table_json):
-        raise ValueError("Invalid table JSON format. Must contain 'name' (str) and 'data' (dict).")
+        raise ValueError("Invalid table JSON format.")
 
-    # Convert to compact JSON string then parse back to dict
-    compact_json_str = json.dumps(table_json, separators=(",", ":"))
-    compact_json_dict = json.loads(compact_json_str)
+    tables = load_tables_from_file()
 
-    new_table = TableData(
-        user_id=user_id,
-        table_json=compact_json_dict
-    )
-    db.add(new_table)
-    db.commit()
-    db.refresh(new_table)
+    existing_ids = [table.get("ID", 0) for table in tables]
+    new_id = max(existing_ids) + 1 if existing_ids else 1
+
+    new_table = {
+        "user": user_id,
+        "ID": new_id,
+        **table_json
+    }
+
+    tables.append(new_table)
+    save_tables_to_file(tables)
     return new_table
 
+
+def delete_table(user_id: int, table_id: int) -> bool:
+    tables = load_tables_from_file()
+    initial_len = len(tables)
+    tables = [t for t in tables if not (t.get("user") == user_id and t.get("ID") == table_id)]
+    if len(tables) == initial_len:
+        return False 
+    save_tables_to_file(tables)
+    return True
+
+
+def save_table_by_id(user_id: int, table_id: int, updated_table: dict) -> bool:
+    tables = load_tables_from_file()
+    updated = False
+    for i, table in enumerate(tables):
+        if table.get("user") == user_id and table.get("ID") == table_id:
+            tables[i] = updated_table
+            updated = True
+            break
+    if updated:
+        save_tables_to_file(tables)
+    return updated

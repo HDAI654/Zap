@@ -1,44 +1,38 @@
-from fastapi import APIRouter, UploadFile, File, Depends
+from fastapi import APIRouter, UploadFile, File, Depends, Form
 from fastapi.responses import JSONResponse
 from services.voice_to_text import transcribe_audio
 from core.logger import logger
-from services.intent_analyzer import extract_tables_from_question
-from services.llm_client import get_answer_and_sql_queries
-from db.crud.table import get_user_table_names, get_table_by_id
 from auth import dependencies
 from sqlalchemy.orm import Session
 from db.session import get_db
+from services.manager import manager
 
 router = APIRouter()
 
 @router.post("/transcribe")
-async def transcribe(audio: UploadFile = File(...), user=Depends(dependencies.get_current_user), db: Session = Depends(get_db), table_name=None):
+async def transcribe(
+    audio: UploadFile = File(None),
+    table_name: str = Form(None),
+    text: str = Form(None),
+    user=Depends(dependencies.get_current_user),
+):
     """
     Receive audio file and return transcribed text.
     """
     try:
+        if text == None and audio == None:
+            return JSONResponse(content={"error": "One of the audio or text is requerd to use this api"}, status_code=400)
+        # use text if exist
+        if text and isinstance(text, str):
+            res = manager(user_text=text, user_id=user.id, table=table_name)
+            return JSONResponse(content={"text": res})
+
         # speech to text
         contents = await audio.read()
         user_text = transcribe_audio(contents)
 
-        # get names of user's tables
-        tables = get_user_table_names(db=db, user_id=user.id)
-
-
-        # get the focused table if exist
-        if table_name != None and table_name in tables:
-            extracted_tables = [table_name]
-
-        else:
-            # extract tables from user question
-            extracted_tables = extract_tables_from_question(tables_names=tables, question=user_text)
-
-        # extract table data
-        tables_data = [get_table_by_id(db=db, table_id=t["id"]) for t in extracted_tables]
-
-        # get final response
-        res = get_answer_and_sql_queries(user_question=user_text, table_data=tables_data)
-        return JSONResponse(content={"text": str(res["answer"])})
+        res = manager(user_text=user_text, user_id=user.id, table=table_name)
+        return JSONResponse(content={"text":res})
     except Exception as e:
         logger.error(f"Error in transcribe endpoint: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
