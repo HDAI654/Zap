@@ -18,21 +18,25 @@ Zap is an AI-powered online accounting platform that lets you manage your busine
 
 ```
 git clone https://github.com/HDAI654/Zap.git
+cd Zap
 ```
 
-2. install dependence
+2. install dependencies
 
 ```
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. prepare `.env`
+3. prepare `.env` and copy to `backend` folder
 
 > use `.env.example` to create .env (It is required to start project !!)
 
 4. create tables
 
 ```
+cd backend
 python create_tables.py
 ```
 

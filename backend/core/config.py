@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     GPT_TOKEN: str
     ASSEMBLYAI_API_KEY: str
     TABLES_FILE: str 
+    DEBUG: bool = False
 
     class Config:
         env_file = ".env"
