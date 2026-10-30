@@ -3,6 +3,7 @@ import json
 from typing import Any
 from pathlib import Path
 
+
 class LocalRequirementCollector(RequirementCollector):
     JSON_PATH = Path(__file__).resolve().parent / "req.json"
 

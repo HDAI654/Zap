@@ -1,5 +1,6 @@
 from typing import Protocol, Any
 
+
 class RequirementCollector(Protocol):
 
     def find_requirement_names(self) -> None:
@@ -13,4 +14,3 @@ class RequirementCollector(Protocol):
 
     def new_requirement(self, news: dict) -> None:
         pass
-
