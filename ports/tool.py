@@ -2,6 +2,7 @@ from typing import Protocol
 
 
 class ToolDef(Protocol):
+    name: str
     defenition: str
 
 
