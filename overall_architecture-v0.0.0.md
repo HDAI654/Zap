@@ -1,4 +1,9 @@
 ```mermaid
+---
+config:
+  theme: dark
+  layout: elk
+---
 flowchart TB
     UI["Tkinter UI"]
 
